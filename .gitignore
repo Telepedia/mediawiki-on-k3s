@@ -1,0 +1,15 @@
+# Tanka / jsonnet-bundler vendored deps (restore with `jb install`)
+tanka/vendor/
+
+# Never commit decrypted secrets or kubeconfigs
+*.dec.yaml
+*.decrypted.*
+kubeconfig
+*.kubeconfig
+k3s.yaml
+
+# age private keys must NEVER be committed (public recipients are fine)
+*.agekey
+key.txt
+
+.DS_Store

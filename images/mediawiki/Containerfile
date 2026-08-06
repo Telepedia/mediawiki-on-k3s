@@ -1,0 +1,25 @@
+FROM php:8.2-fpm-bookworm
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git unzip \
+        libicu-dev libonig-dev libzip-dev \
+        libpng-dev libjpeg-dev libwebp-dev libfreetype6-dev \
+        librsvg2-bin imagemagick \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install -j"$(nproc)" \
+        intl mbstring mysqli pdo_mysql calendar gd opcache zip \
+    && pecl install apcu \
+    && docker-php-ext-enable apcu \
+    && apt-get purge -y --auto-remove \
+        libicu-dev libonig-dev libzip-dev libpng-dev libjpeg-dev libwebp-dev libfreetype6-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+ARG MW_VERSION=REL1_43
+WORKDIR /var/www/mediawiki
+RUN git clone --depth 1 -b ${MW_VERSION} https://github.com/telepedia/mediawiki . \
+    && composer install --no-dev --no-interaction --prefer-dist
+
+EXPOSE 9000
+CMD ["php-fpm"]
