@@ -15,6 +15,7 @@ mariadb_packages:
       - pkg: mariadb_packages
     - contents: |
         [mariadb]
+        bind-address                    = {{ salt['pillar.get']('vlan_ip', '127.0.0.1') }}
         log_bin                         = mariadb-bin
         server_id                       = 2
         binlog_format                   = ROW
